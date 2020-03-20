@@ -1,2 +1,2 @@
 # change-nappies
-wee script to run new baby Fleming network
+some simple scripts to run new baby Fleming network
