@@ -39,7 +39,7 @@ do
 done
 
 FILENAME=$TEST_SIZE"_"$RUNS"_"$DATETIME
-echo $FILENAME
+echo "test logs can be found at /tmp/test-out-"$FILENAME".log"
 
 mv $OUTPUT_FILE test-out-$FILENAME.log
 
