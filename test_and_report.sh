@@ -62,7 +62,9 @@ echo "file: "$COUNTER >> ./zzz_log/report
 echo "size: "$(ls -hs ./to-upload/file.dat | sed 's/^\([^ ]*\).*/\1/') >> ./zzz_log/report
 
 echo "# upload" >> ./zzz_log/report
-(time safe files put ./to-upload/file.dat ) &>> ./zzz_log/report 
+
+(/usr/bin/time -f "\t%E elapsed time" safe files put ./to-upload/file.dat ) &>> ./zzz_log/report 
+
 
 echo >> ./zzz_log/report
 echo "# vault size" >> ./zzz_log/report
@@ -73,6 +75,10 @@ done
 
 date >> ./zzz_log/report
 echo "### END" >> ./zzz_log/report
+
+# copy to a .csv for easier processing by spreadsheet or R
+cat ./zzz_log/report > ./zzz_log/report.csv
+
 
 ## Summary pivot
 echo -ne "\tfile:\t0\tsize: 0\t#\t\t\t\treal\t0\tuser\t0\tsys\t0\t\t" > ./zzz_log/summary_table_report; tail -n +7 ./zzz_log/report | tr '\n' '@' | sed 's/############/\n/g' | sed 's/@/\t/g' | sed 's/file: /file:\t/' >> ./zzz_log/summary_table_report
