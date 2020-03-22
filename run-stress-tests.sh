@@ -1,5 +1,7 @@
 #! /bin/bash
 
+
+## use test_and_report.sh in preference to this for now
 #simple script to run PUT tests
 WD=/tmp
 OUTPUT_FILE=test.out
