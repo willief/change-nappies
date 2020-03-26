@@ -42,12 +42,19 @@ mkdir ./to-upload 2>/dev/null
 
 ## Base state
 #log base state
+touch ./zzz_log/report
+touch ./time-out.txt
 echo "### START" > ./zzz_log/report
 date >> ./zzz_log/report
 lscpu | grep -P 'Model name|^CPU\(s\)' >> ./zzz_log/report
 vmstat -s | grep -P 'total memory|total swap' >> ./zzz_log/report
-echo "# initial vault size" >> ./zzz_log/report
-du -sh ~/.safe/vault/baby-fleming-vaults/* | sed 's#^\([^\t]*\).*/\([^/]*\)#\2\t\1#' | sed 's/genesis/1/' | sort >> ./zzz_log/report
+cat /etc/*-release |grep -P DISTRIB_DESCRIPTION  >> ./zzz_log/report
+uname -mrs  >> ./zzz_log/report
+echo ""  >> ./zzz_log/report
+echo "PUT " $TEST_SIZE "kb of random data to the network " $RUNS "times" >> ./zzz_log/report
+echo ""  >> ./zzz_log/report
+#echo "# initial vault size" >> ./zzz_log/report
+#du -sh ~/.safe/vault/baby-fleming-vaults/* | sed 's#^\([^\t]*\).*/\([^/]*\)#\2\t\1#' | sed 's/genesis/1/' | sort >> ./zzz_log/report
 
 ## Start
 COUNTER=0
@@ -56,29 +63,27 @@ let COUNTER=COUNTER+1
 
 dd if=/dev/urandom of=./to-upload/file.dat bs=1k count=$TEST_SIZE 2>/dev/null
 
-echo "file: "$COUNTER 
-echo "############" >> ./zzz_log/report
-echo "file: "$COUNTER >> ./zzz_log/report
-echo "size: "$(ls -hs ./to-upload/file.dat | sed 's/^\([^ ]*\).*/\1/') >> ./zzz_log/report
+#echo "file: "$COUNTER 
+#echo "############" >> ./zzz_log/report
+#echo "file: "$COUNTER >> ./zzz_log/report
+#echo $COUNTER"," >> ./zzz_log/report
+#echo "size: "$(ls -hs ./to-upload/file.dat | sed 's/^\([^ ]*\).*/\1/') >> ./zzz_log/report
 
-echo "# upload" >> ./zzz_log/report
+printf $COUNTER","$(ls -hs ./to-upload/file.dat | sed 's/^\([^ ]*\).*/\1/')"," >> ./zzz_log/report
 
-(/usr/bin/time -f "\t%E elapsed time" safe files put ./to-upload/file.dat ) &>> ./zzz_log/report 
-
+#echo "# upload" >> ./zzz_log/report
+/usr/bin/time -o ./zzz_log/report -a -f "\t%E "  safe files put ./to-upload/file.dat | sed 's/^\([^ ]*\).*/\1/' |tee -a ./zzz_log/report   #| sed 's/^\([^ ]*\).*/\1/'
 
 echo >> ./zzz_log/report
-echo "# vault size" >> ./zzz_log/report
-du -sh ~/.safe/vault/baby-fleming-vaults/* | sed 's#^\([^\t]*\).*/\([^/]*\)#\2\t\1#' | sed 's/genesis/1/' | sort >> ./zzz_log/report
+#echo "# vault size" >> ./zzz_log/report
+#du -sh ~/.safe/vault/baby-fleming-vaults/* | sed 's#^\([^\t]*\).*/\([^/]*\)#\2\t\1#' | sed 's/genesis/1/' | sort >> ./zzz_log/report
 
-echo "upload: "$COUNTER" complete"
+#echo "upload: "$COUNTER" complete"
 done
-
 date >> ./zzz_log/report
 echo "### END" >> ./zzz_log/report
 
-# copy to a .csv for easier processing by spreadsheet or R
 cat ./zzz_log/report > ./zzz_log/report.csv
-
 
 ## Summary pivot
 echo -ne "\tfile:\t0\tsize: 0\t#\t\t\t\treal\t0\tuser\t0\tsys\t0\t\t" > ./zzz_log/summary_table_report; tail -n +7 ./zzz_log/report | tr '\n' '@' | sed 's/############/\n/g' | sed 's/@/\t/g' | sed 's/file: /file:\t/' >> ./zzz_log/summary_table_report
