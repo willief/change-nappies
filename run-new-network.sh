@@ -30,7 +30,7 @@ then
         echo "$DEV_LOGS already exists but is not a directory" 1>&2
     fi
     
-    read -p "Do you require enhanced logging?"  =" -n 1 -r
+    read -p "Do you require enhanced logging?                                               =" -n 1 -r
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         VAULT_RUN_CMD="safe vault run-baby-fleming"
     fi
