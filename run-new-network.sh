@@ -1,13 +1,5 @@
 #/bin/bash
 #set -xv
-
-echo "DO NOT USE THIS SCRIPT"
-echo "Download it again soon when I have it working"
-exit
-
-
-
-
 clear
 DATETIME="`date '+%Y%m%d%H%M%S'`"
 DEV_LOGS=/tmp/baby-fleming-logs-for-devs
@@ -23,8 +15,8 @@ echo "=  This will set up a new Baby Fleming network on your computer.          
 echo "=                                                                                 ="
 echo "=  Existing logs will be timestamped and archived and the old vaults DELETED      ="
 echo "=                                                                                 ="
-read -p "=  Are you entirely sure about this? (y/N)                                        =" -n 1 -r
-echo "=                                                                                 ="
+read -p "=     Are you entirely sure about this? (y/N)     " -n 1 -r
+echo ""
 
 
 if [[ $REPLY =~ ^[Yy]$ ]]
@@ -35,15 +27,16 @@ then
     if [[ ! -e $DEV_LOGS ]]; then
         mkdir -p $DEV_LOGS
     elif [[ ! -d $DEV_LOGS ]]; then
-        echo "$DEV_LOGS already exists but is not a directory" 1>&2
+        echo $DEV_LOGS " already exists but is not a directory" 1>&2
     fi
     
-    read -p "Do you require enhanced logging?                                               =" -n 1 -r
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        VAULT_RUN_CMD="safe vault run-baby-fleming"
+    read -p "=     Do you require enhanced logging? (y/N)    " -n 1 -r
+    if [[ $REPLY =~ ^[Yy]$ ]]
+    then
+        VAULT_RUN_CMD="safe vault run-baby-fleming -y"
     fi
     
-    echo "==================================================================================="
+    echo ""
 
     # set up the destination for this test run logs
     mkdir -p $TEST_RUN_LOG
@@ -71,12 +64,19 @@ then
 
     # OK    Do stuff .......
     # -y &&
+    echo "=============================================================================="
+    echo "Waiting for the network to initialise - won't be long :-)"
+    echo ""
+    echo ""
+    echo "=============================================================================="
     $VAULT_RUN_CMD &&
-    sleep 10s   #let the section start up properly before doing anything else
+    sleep 10s &&   #let the section start up properly before doing anything else
+    echo "=============================================================================="
+    echo  " ok  thats long enough - get on with it then"
+    echo "=============================================================================="
     safe networks add my-network &&
     safe networks switch my-network &&
     safe auth restart &&
-    #safe auth status
     safe auth create-acc --test-coins -c $WD/myconfig.json &&
     safe auth login --self-auth -c $WD/myconfig.json &&
     safe auth status
@@ -98,3 +98,6 @@ then
     echo "==================================================================================="
 
 fi
+
+
+
