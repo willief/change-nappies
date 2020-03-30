@@ -1,5 +1,13 @@
 #/bin/bash
 #set -xv
+
+echo "DO NOT USE THIS SCRIPT"
+echo "Download it again soon when I have it working"
+exit
+
+
+
+
 clear
 DATETIME="`date '+%Y%m%d%H%M%S'`"
 DEV_LOGS=/tmp/baby-fleming-logs-for-devs
