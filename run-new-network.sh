@@ -17,7 +17,6 @@ echo "=  Existing logs will be timestamped and archived and the old vaults DELET
 echo "=                                                                                 ="
 read -p "=  Are you entirely sure about this? (y/N)                                        =" -n 1 -r
 echo "=                                                                                 ="
-echo "==================================================================================="
 
 
 if [[ $REPLY =~ ^[Yy]$ ]]
@@ -30,6 +29,13 @@ then
     elif [[ ! -d $DEV_LOGS ]]; then
         echo "$DEV_LOGS already exists but is not a directory" 1>&2
     fi
+    
+    read -p "Do you require enhanced logging?"  =" -n 1 -r
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        VAULT_RUN_CMD="safe vault run-baby-fleming"
+    fi
+    
+    echo "==================================================================================="
 
     # set up the destination for this test run logs
     mkdir -p $TEST_RUN_LOG
@@ -58,6 +64,7 @@ then
     # OK    Do stuff .......
     # -y &&
     $VAULT_RUN_CMD &&
+    sleep 10s   #let the section start up properly before doing anything else
     safe networks add my-network &&
     safe networks switch my-network &&
     safe auth restart &&
@@ -69,8 +76,9 @@ then
    
 
     # TODO: error checking here
-     # if we got this far, it's worked - report success
-
+     # if we got this far, it's probably worked - report success
+     # Not necessarily true yet :-(
+     
     echo "==================================================================================="
     echo "=                                                                                 ="
     echo "=      Your new Baby Fleming test network is running                              ="
